@@ -1,0 +1,107 @@
+
+public class CaminoMasCorto {
+
+    static final int INF = 999999;
+    static final int N = 6;
+
+    public static void main(String[] args) {
+
+        int[][] mat = new int[N][N];
+        int[] dist = new int[N];
+        int[] pred = new int[N];
+        boolean[] visitado = new boolean[N];
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                mat[i][j] = INF;
+            }
+        }
+
+        mat[0][1] = 4; mat[1][0] = 4;
+        mat[0][2] = 2; mat[2][0] = 2;
+        mat[1][2] = 1; mat[2][1] = 1;
+        mat[1][3] = 5; mat[3][1] = 5;
+        mat[2][4] = 10; mat[4][2] = 10;
+        mat[3][4] = 3; mat[4][3] = 3;
+        mat[3][5] = 2; mat[5][3] = 2;
+        mat[4][5] = 1; mat[5][4] = 1;
+
+        dijkstra(mat, dist, visitado, pred, 0);
+
+        System.out.println("=== Distancias minimas desde A ===");
+
+        for (int i = 0; i < N; i++) {
+            System.out.println("A -> " + (char)('A' + i)
+                    + " = " + dist[i]);
+        }
+
+        mostrarCamino(pred, 5);
+
+        System.out.println("Distancia total: " + dist[5]);
+    }
+
+    public static void dijkstra(int[][] mat, int[] dist,
+                                boolean[] visitado, int[] pred,
+                                int origen) {
+
+        for (int i = 0; i < N; i++) {
+            dist[i] = INF;
+            visitado[i] = false;
+            pred[i] = -1;
+        }
+
+        dist[origen] = 0;
+
+        for (int i = 0; i < N; i++) {
+
+            int u = -1;
+            int minDist = INF;
+
+            for (int j = 0; j < N; j++) {
+                if (!visitado[j] && dist[j] < minDist) {
+                    minDist = dist[j];
+                    u = j;
+                }
+            }
+
+            if (u == -1) {
+                break;
+            }
+
+            visitado[u] = true;
+            for (int j = 0; j < N; j++) {
+                if (!visitado[j] && mat[u][j] < INF) {
+                    if (dist[u] + mat[u][j] < dist[j]) {
+                        dist[j] = dist[u] + mat[u][j];
+                        pred[j] = u;
+                    }
+                }
+            }
+        }
+    }
+
+    public static void mostrarCamino(int[] pred, int destino) {
+
+        int[] camino = new int[N];
+        int k = 0;
+        int actual = destino;
+
+        while (actual != -1) {
+            camino[k] = actual;
+            k++;
+            actual = pred[actual];
+        }
+
+        System.out.print("Camino optimo: ");
+
+        for (int i = k - 1; i >= 0; i--) {
+            System.out.print((char)('A' + camino[i]));
+
+            if (i > 0) {
+                System.out.print(" -> ");
+            }
+        }
+
+        System.out.println();
+    }
+}
